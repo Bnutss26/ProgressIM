@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Progress Invest Metall
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10 mt-4">
+                <div class="shadow border rounded p-2">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group mt-2 {% if form.stock.errors %}has-error{% endif %}">
+                            <label for="{{ form.stock.id_for_label }}"><strong>Склад</strong></label>
+                            <select class="form-select mt-2 select2 {% if form.stock.errors %}is-invalid{% endif %}"
+                                    id="{{ form.stock.id_for_label }}"
+                                    name="{{ form.stock.name }}">
+                                <option selected disabled>Выберите склад</option>
+                                {% for stock in user_stocks %}
+                                    <option value="{{ stock.id }}">{{ stock.name_stock }}</option>
+                                {% endfor %}
+                            </select>
+                            {% if form.stock.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.stock.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            <div class="form-group mt-2 {% if form.material.errors %}has-error{% endif %}">
+                                <label for="{{ form.material.id_for_label }}"><strong>Материал</strong></label>
+                                <select class="form-select mt-2 select2 {% if form.material.errors %}is-invalid{% endif %}"
+                                        id="{{ form.material.id_for_label }}"
+                                        name="{{ form.material.name }}">
+                                    <option selected disabled>Выберите материал</option>
+                                    {% for material in form.material.field.choices %}
+                                        <option value="{{ material.0 }}">{{ material.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.material.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ form.material.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-group mt-2 {% if form.quantity.errors %}has-error{% endif %}">
+                                    <label for="{{ form.quantity.id_for_label }}"><strong>Количество</strong></label>
+                                    <input type="text"
+                                           class="form-control mt-2 {% if form.quantity.errors %}is-invalid{% endif %}"
+                                           id="ComingQuantityInput" name="{{ form.quantity.name }}">
+                                    {% if form.quantity.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.quantity.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group mt-2 {% if form.price.errors %}has-error{% endif %}">
+                                    <label for="{{ form.price.id_for_label }}"><strong>Цена</strong></label>
+                                    <input type="text"
+                                           class="form-control mt-2 {% if form.price.errors %}is-invalid{% endif %}"
+                                           id="ComingPriceInput" name="{{ form.price.name }}">
+                                    {% if form.price.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.price.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="text-center mt-2">
+                                    <button type="submit" class="btn btn-success" style="margin-right: 20px;">Сохранить
+                                        <i
+                                                class="fas fa-save"></i>
+                                    </button>
+                                    <a href="{% url 'sales:main_menu' %}" class="btn btn-dark">
+                                        <i class="fas fa-arrow-left"></i> Назад
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

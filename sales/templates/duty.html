@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% block title %}
+    Progress Invest Metall
+{% endblock %}
+
+{% block content %}
+    <div class="text-center"><br>
+        <div class="d-flex justify-content-between align-items-center mt-5">
+            <div class="input-group">
+                <div class="input-group-append">
+                    <form method="post" action="{% url 'sales:send_telegram_message' %}" id="telegramForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="message" id="messageInput" value="">
+                        <button type="submit" class="btn btn-warning mr-auto" style="margin-left: 10px;">Отправить
+                        </button>
+                    </form>
+                </div>
+                <form class="text-center" style="max-width: 65%; margin: 0 auto;" method="GET"
+                      action="{% url 'sales:duty_list' %}">
+                    <label for="start_date">Начало:</label>
+                    <input type="date" id="start_date" name="start_date">
+
+                    <label for="end_date">Конец:</label>
+                    <input type="date" id="end_date" name="end_date">
+
+                    <button type="submit" class="btn btn-primary mr-auto">Смотреть</button>
+                </form>
+            </div>
+            <a href="{% url 'sales:main_menu' %}" class="btn btn-dark mr-auto" style="margin-right: 10px;">Назад</a>
+        </div>
+        <table class="table table-hover mt-1">
+            <thead>
+            <tr>
+                <th class="table-primary text-center"><strong>Склад</strong></th>
+                <th class="table-primary text-center"><strong>Наименование</strong></th>
+                <th class="table-primary text-center"><strong>Количество</strong></th>
+                <th class="table-primary text-center"><strong>Сумма</strong></th>
+                <th class="table-primary text-center"><strong>Имя должника</strong></th>
+                <th class="table-primary text-center"><strong>Дата и время</strong></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for expense in expenses %}
+                <tr>
+                    <td class="text-center">{{ expense.stock }}</td>
+                    <td class="text-center">{{ expense.material.name }}</td>
+                    <td class="text-center">{{ expense.quantity|floatformat:1|intcomma }} {{ expense.material.unit }}</td>
+                    <td class="text-center {% if expense.on_credit %}text-danger{% endif %}">
+                        {{ expense.total_cost|floatformat:0|intcomma }} UZS
+                    </td>
+                    <td class="text-center">{{ expense.debtor_name|default:'' }}</td>
+                    <td class="text-center">{{ expense.expenses_date|date:"d.m.Y" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <script src="{% static 'js/duty.js' %}"></script>
+    </div>
+{% endblock %}

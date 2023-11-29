@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}
+    Progress Invest Metall
+{% endblock %}
+
+{% block content %}
+    <div class="text-center my-5"><br>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="input-group">
+                <div class="input-group-append">
+                    <form method="post" action="{% url 'sales:send_telegram_message' %}" id="telegramForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="message" id="messageInput" value="">
+                        <button type="submit" class="btn btn-warning mr-auto" style="margin-left: 10px;">Отправить
+                        </button>
+                    </form>
+                </div>
+                <form class="text-center" style="max-width: 50%; margin: 0 auto;" method="get"
+                      action="{% url 'sales:leftovers' %}">
+                    <div class="form-group">
+                        {{ form.stock }}
+                        <button type="submit" style="margin-left: 5px;" class="btn btn-primary mr-auto">Фильтр</button>
+                    </div>
+                </form>
+            </div>
+            <a href="{% url 'sales:main_menu' %}" class="btn btn-dark mr-auto" style="margin-right: 10px;">Назад</a>
+        </div>
+        <table class="table table-hover mt-1">
+            <thead>
+            <tr>
+                <th class="table-primary text-center"><strong>Склад</strong></th>
+                <th class="table-primary text-center"><strong>Наименование</strong></th>
+                <th class="table-primary text-center"><strong>Средняя цена прихода</strong></th>
+                <th class="table-primary text-center"><strong>Общее количество</strong></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for leftover in leftovers %}
+                <tr>
+                    <td class="text-center">{{ leftover.stock.name_stock }}</td>
+                    <td class="text-center"
+                        data-stock="{{ leftover.stock.name_stock }}"
+                        data-name="{{ leftover.material.name }}"
+                        data-unit="{{ leftover.material.unit }}"
+                        data-quantity="{{ leftover.quantity }}">
+                        {{ leftover.material.name }}
+                    </td>
+                    <td class="text-center">{{ leftover.avg_price|default:"N/A"|floatformat:0|intcomma }} UZS</td>
+                    <td class="text-center"
+                        style="background-color:
+                                {% if leftover.material.unit == 'шт' %}
+                                    {% if leftover.quantity <= 5 %}
+                                        red;,
+                                    {% elif leftover.quantity > 5 and leftover.quantity <= 20 %}
+                                        yellow;,
+                                    {% else %}
+                                        green;,
+                                    {% endif %}
+                                {% elif leftover.material.unit == 'мт' %}
+                                    {% if leftover.quantity <= 100 %}
+                                        red;,
+                                    {% elif leftover.quantity > 100 and leftover.quantity <= 450 %}
+                                        yellow;,
+                                    {% else %}
+                                        green;
+                                    {% endif %}
+                                {% endif %}; color: black;">
+                        {{ leftover.quantity|floatformat:1|intcomma }} {{ leftover.material.unit }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <script src="{% static 'js/scripts.js' %}"></script>
+    </div>
+{% endblock %}
